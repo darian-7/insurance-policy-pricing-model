@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/darian/Desktop/C5i%20docs/C5i%20Code/Final%20project/mlruns/0/69b27f37c6b5496f816c02a92c153e93/artifacts
+end_time: 1721663736083
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 69b27f37c6b5496f816c02a92c153e93
+run_name: fortunate-sloth-426
+run_uuid: 69b27f37c6b5496f816c02a92c153e93
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1721663734389
+status: 3
+tags: []
+user_id: darian

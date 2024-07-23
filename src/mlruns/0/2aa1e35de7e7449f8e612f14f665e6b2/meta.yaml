@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/darian/Desktop/C5i%20docs/C5i%20Code/Final%20project/mlruns/0/2aa1e35de7e7449f8e612f14f665e6b2/artifacts
+end_time: 1721663866147
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 2aa1e35de7e7449f8e612f14f665e6b2
+run_name: kindly-mole-383
+run_uuid: 2aa1e35de7e7449f8e612f14f665e6b2
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1721663864367
+status: 3
+tags: []
+user_id: darian

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/darian/Desktop/C5i%20docs/C5i%20Code/Final%20project/mlruns/0/26f1b03b7b814afab247f2daeb1136bb/artifacts
+end_time: 1721718315034
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 26f1b03b7b814afab247f2daeb1136bb
+run_name: salty-horse-501
+run_uuid: 26f1b03b7b814afab247f2daeb1136bb
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1721718312812
+status: 3
+tags: []
+user_id: darian
