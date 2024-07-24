@@ -1,0 +1,5 @@
+outs:
+- md5: 07a7d55a36ddcca648a5112456b57968
+  size: 32650
+  hash: md5
+  path: encoded-data.csv
