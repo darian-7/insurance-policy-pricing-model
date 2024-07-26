@@ -1,15 +1,9 @@
 pandas
 seaborn
 matplotlib
-sklearn-learn
+scikit-learn
 numpy
 boto3
-io
-os
 mlflow
-logging
-warnings
-sys
 joblib
-urllib
-dotenv
+python-dotenv
