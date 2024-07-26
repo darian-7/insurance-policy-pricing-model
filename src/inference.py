@@ -18,8 +18,12 @@ import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.pipeline import Pipeline
 from urllib.parse import urlparse
-from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score, explained_variance_score, mean_absolute_percentage_error
+from dotenv import load_dotenv
+
+# Load the .env file
+load_dotenv()
 
 # Fetch AWS credentials from environment variables
 aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
