@@ -2,7 +2,6 @@
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-from sklearn.preprocessing import LabelEncoder
 import boto3
 import pandas as pd
 import io
@@ -14,13 +13,18 @@ import sys
 import mlflow
 import mlflow.sklearn
 import numpy as np
+import sagemaker
 
+from sklearn.preprocessing import LabelEncoder
+from sagemaker.model import Model
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.pipeline import Pipeline
 from urllib.parse import urlparse
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score, explained_variance_score, mean_absolute_percentage_error
 from dotenv import load_dotenv
+
+# AWS code -----------------------------------------------------------------------------------------------
 
 # Load the .env file
 load_dotenv()
@@ -37,6 +41,24 @@ file_key = 'inference-data/inference-data.csv'
 
 obj = s3.get_object(Bucket=bucket_name, Key=file_key)
 inference_data = obj['Body'].read().decode('utf-8')
+
+sagemaker_session = sagemaker.Session(boto3.Session(region_name="eu-north-1"))
+
+role = 'arn:aws:iam::533266980555:role/role'
+
+model = Model(
+    image_uri='533266980555.dkr.ecr.eu-north-1.amazonaws.com/insurance-policy-pricing-model',
+    role=role,
+    model_data='s3://health-insurance-bucket/models/optimal-model-rfr.tar.gz',
+    sagemaker_session=sagemaker.Session()
+)
+
+predictor = model.deploy(
+    initial_instance_count=1,
+    instance_type='ml.m5.large'
+)
+
+# EDA code -----------------------------------------------------------------------------------------------
 
 # Load the data into a DataFrame
 data = pd.read_csv(io.StringIO(inference_data))
@@ -94,7 +116,7 @@ predictions_df = pd.DataFrame(predictions, columns=['predicted_expenses'])
 print(predictions_df)
 
 
-# MLflow code ------------------------------------------------------------------------
+# MLflow code -----------------------------------------------------------------------------------------------
 
 logging.basicConfig(level=logging.WARN)
 logger = logging.getLogger(__name__)

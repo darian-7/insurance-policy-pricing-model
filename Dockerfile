@@ -1,26 +1,20 @@
 # Use an official Python runtime as a parent image
 FROM python:3.8-slim
 
-# Set the working directory in the container
-WORKDIR /insurance-policy-pricing-model
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    python3-pip \
+    python3-dev
 
-# Copy the requirements.txt file into the container
-COPY requirements.txt /insurance-policy-pricing-model/
+# Install Python packages
+COPY requirements.txt .
+RUN pip3 install -r requirements.txt
 
-# Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy the inference script
+COPY src/inference.py /opt/program/inference.py
 
-# Copy the src directory contents into the container at /app/src
-COPY src/ /insurance-policy-pricing-model/src
+# Set the entry point
+ENV SAGEMAKER_PROGRAM inference.py
 
-# Copy the data directory contents into the container at /app/data
-COPY data/ /insurance-policy-pricing-model/data
-
-# Make port 80 available to the world outside this container
-EXPOSE 80
-
-# Define environment variable
-ENV NAME World
-
-# Run the inference script when the container launches
-CMD ["python", "src/inference.py"]
+# Define the entry point
+ENTRYPOINT ["python3", "/opt/program/inference.py"]
