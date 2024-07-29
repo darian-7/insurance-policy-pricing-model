@@ -23,15 +23,19 @@ from urllib.parse import urlparse
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score, explained_variance_score, mean_absolute_percentage_error
 from dotenv import load_dotenv
+from flask import Flask, request, jsonify
 
 # AWS code -----------------------------------------------------------------------------------------------
 
 # Load the .env file
 load_dotenv()
 
+app = Flask(__name__)
+
 # Fetch AWS credentials from environment variables
 aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
 aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
+aws_region = os.getenv('AWS_DEFAULT_REGION', 'eu-north-1')
 
 # Initialize a session using Amazon S3
 s3 = boto3.client('s3', region_name='eu-north-1', aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
@@ -43,6 +47,24 @@ obj = s3.get_object(Bucket=bucket_name, Key=file_key)
 inference_data = obj['Body'].read().decode('utf-8')
 
 sagemaker_session = sagemaker.Session(boto3.Session(region_name="eu-north-1"))
+
+# Load the model for Flask health check
+model_path = os.getenv('MODEL_PATH')
+if model_path:
+    model = joblib.load(model_path)
+else:
+    raise ValueError("MODEL_PATH environment variable not set")
+
+@app.route('/ping', methods=['GET'])
+def ping():
+    return jsonify(status='ok')
+
+@app.route('/invocations', methods=['POST'])
+def invoke():
+    data = request.json['instances']
+    predictions = model.predict(data)
+    return jsonify(predictions=predictions.tolist())
+
 
 role = 'arn:aws:iam::533266980555:role/role'
 
@@ -129,6 +151,10 @@ def eval_metrics(actual, pred):
     return rmse, mape, r2, evs
 
 if __name__ == "__main__":
+
+    # Flask health check
+    app.run(host='0.0.0.0', port=8080) 
+
     warnings.filterwarnings("ignore")
     np.random.seed(40)
     

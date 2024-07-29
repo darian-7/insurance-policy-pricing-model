@@ -13,6 +13,15 @@ RUN pip3 install -r requirements.txt
 # Copy the inference script
 COPY src/inference.py /opt/program/inference.py
 
+# Health check endpoint
+COPY src/ping.py /opt/program/ping.py
+
+# Copy the model file
+COPY src/optimal-model-rfr.pkl /opt/ml/model/optimal-model-rfr.pkl
+
+# Set the environment variable for the model path
+ENV MODEL_PATH /opt/ml/model/optimal-model-rfr.pkl
+
 # Set the entry point
 ENV SAGEMAKER_PROGRAM inference.py
 
