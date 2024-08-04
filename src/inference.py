@@ -17,6 +17,7 @@ import sagemaker
 
 from sklearn.preprocessing import LabelEncoder
 from sagemaker.model import Model
+from sagemaker.serializers import CSVSerializer
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.pipeline import Pipeline
 from urllib.parse import urlparse
@@ -28,56 +29,57 @@ from flask import Flask, request, jsonify
 # AWS code -----------------------------------------------------------------------------------------------
 
 # Load the .env file
-load_dotenv()
+# load_dotenv()
 
-app = Flask(__name__)
+# app = Flask(__name__)
 
 # Fetch AWS credentials from environment variables
-aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
-aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
-aws_region = os.getenv('AWS_DEFAULT_REGION', 'eu-north-1')
+aws_access_key_id = 'AKIAQGYBPPXWQZ3AIWYS'
+aws_secret_access_key = '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'
+aws_region = 'eu-north-1'
+role = 'arn:aws:iam::014498627053:role/sagemaker-eks-deployment'
+
 
 # Initialize a session using Amazon S3
-s3 = boto3.client('s3', region_name='eu-north-1', aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
+s3 = boto3.client('s3', region_name=aws_region, aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
 
-bucket_name = 'health-insurance-bucket'
-file_key = 'inference-data/inference-data.csv'
+bucket_name = 'health-ins-bucket'
+file_key = 'data/inference-data.csv'
 
 obj = s3.get_object(Bucket=bucket_name, Key=file_key)
 inference_data = obj['Body'].read().decode('utf-8')
 
 sagemaker_session = sagemaker.Session(boto3.Session(region_name="eu-north-1"))
 
-# Load the model for Flask health check
-model_path = os.getenv('MODEL_PATH')
-if model_path:
-    model = joblib.load(model_path)
-else:
-    raise ValueError("MODEL_PATH environment variable not set")
+# # Load the model for Flask health check
+# model_path = '/Users/darian/Desktop/C5i\ docs/C5i\ Code/insurance-policy-pricing-model/src/optimal-model-rfr.pkl'
 
-@app.route('/ping', methods=['GET'])
-def ping():
-    return jsonify(status='ok')
+# if model_path:
+#     model = joblib.load(model_path)
+# else:
+#     raise ValueError("MODEL_PATH environment variable not set")
 
-@app.route('/invocations', methods=['POST'])
-def invoke():
-    data = request.json['instances']
-    predictions = model.predict(data)
-    return jsonify(predictions=predictions.tolist())
+# @app.route('/ping', methods=['GET'])
+# def ping():
+#     return jsonify(status='ok')
 
-
-role = 'arn:aws:iam::533266980555:role/role'
+# @app.route('/invocations', methods=['POST'])
+# def invoke():
+#     data = request.json['instances']
+#     predictions = model.predict(data)
+#     return jsonify(predictions=predictions.tolist())
 
 model = Model(
-    image_uri='533266980555.dkr.ecr.eu-north-1.amazonaws.com/insurance-policy-pricing-model',
+    image_uri='014498627053.dkr.ecr.eu-north-1.amazonaws.com/insurance-policy-pricing-model:latest',
     role=role,
-    model_data='s3://health-insurance-bucket/models/optimal-model-rfr.tar.gz',
+    model_data='s3://health-ins-bucket/models/optimal-model-rfr.tar.gz',
     sagemaker_session=sagemaker.Session()
 )
 
 predictor = model.deploy(
     initial_instance_count=1,
-    instance_type='ml.m5.large'
+    instance_type='ml.m5.large',
+    serializer=CSVSerializer()
 )
 
 # EDA code -----------------------------------------------------------------------------------------------
@@ -153,10 +155,10 @@ def eval_metrics(actual, pred):
 if __name__ == "__main__":
 
     # Flask health check
-    app.run(host='0.0.0.0', port=8080) 
+    # app.run(host='0.0.0.0', port=8080) 
 
-    warnings.filterwarnings("ignore")
-    np.random.seed(40)
+    # warnings.filterwarnings("ignore")
+    # np.random.seed(40)
     
     # Split the data into training and test sets. (0.75, 0.25) split.
     X = encoded_inference_data.drop(columns=['expenses'])
