@@ -85,4 +85,4 @@ def train_model(bucket_name, file_key, model_output_dir):
     print("Model successfully trained and saved")
 
 # Example usage
-train_model(bucket_name=bucket_name, file_key=file_key, model_output_dir='models')
+# train_model(bucket_name=bucket_name, file_key=file_key, model_output_dir='models')

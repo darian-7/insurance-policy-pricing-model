@@ -10,3 +10,5 @@ python-dotenv
 sagemaker
 flask
 pytest
+moto
+sys

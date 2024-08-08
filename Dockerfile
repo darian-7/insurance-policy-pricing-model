@@ -11,7 +11,7 @@ COPY requirements.txt .
 RUN pip3 install -r requirements.txt
 
 # Copy the inference script
-COPY src/eks-deployment.py /opt/program/eks-deployment.py
+COPY src/eks-deployment.py /opt/program/inference.py
 
 # Health check endpoint
 # COPY src/ping.py /opt/program/ping.py
@@ -27,10 +27,12 @@ COPY data/validation.csv /opt/ml/input/data/validation/validation.csv
 ENV MODEL_PATH /opt/ml/model/optimal-model-rfr.pkl
 
 # Set the entry point
-ENV SAGEMAKER_PROGRAM eks-deployment.py
+ENV SAGEMAKER_PROGRAM inference.py
 
 # Expose the port your application runs on
 EXPOSE 8000
 
 # Define the entry point
-ENTRYPOINT ["python3", "/opt/program/eks-deployment.py"]
+ENTRYPOINT ["python3", "/opt/program/inference.py"]
+
+# Wrapper file (entry point) for preprocessing and training

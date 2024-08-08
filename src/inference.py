@@ -91,4 +91,4 @@ predictions = predict_on_inference_data(model=model, preprocessed_data_path=prep
 data = pd.read_csv(preprocessed_inference_data_path)
 X = data.drop(columns=['expenses'])
 y = data['expenses']
-evaluate_model(model, X, y)
+# evaluate_model(model, X, y)

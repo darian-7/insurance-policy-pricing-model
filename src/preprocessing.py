@@ -25,12 +25,22 @@ def preprocess_data(bucket_name, file_key, output_dir):
     # Load the data into a DataFrame
     data = pd.read_csv(io.StringIO(raw_data))
 
+    # Print the first few rows of the data to verify it was loaded correctly
+    print("Initial data:")
+    print(data.head())
+
     # One-Hot Encoding for binary categorical features
     data = pd.get_dummies(data, columns=['sex', 'smoker'], drop_first=True)
 
-    # Convert bool to int64
-    data['sex_male'] = data['sex_male'].astype('int64')
-    data['smoker_yes'] = data['smoker_yes'].astype('int64')
+    # Print the columns to check if encoding was successful
+    print("Data columns after get_dummies:")
+    print(data.columns)
+
+    # Convert bool to int64 if the columns exist
+    if 'sex_male' in data.columns:
+        data['sex_male'] = data['sex_male'].astype('int64')
+    if 'smoker_yes' in data.columns:
+        data['smoker_yes'] = data['smoker_yes'].astype('int64')
 
     # Label Encoding for ordinal relationship
     label_encoder = LabelEncoder()
