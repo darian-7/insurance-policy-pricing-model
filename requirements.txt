@@ -11,4 +11,3 @@ sagemaker
 flask
 pytest
 moto
-subprocess
