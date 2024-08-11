@@ -4,19 +4,9 @@ import boto3
 import sys
 import pandas as pd
 from botocore.exceptions import NoCredentialsError, PartialCredentialsError
-from moto import mock_aws
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 from preprocessing import preprocess_data
-
-# Mock S3 bucket
-@pytest.fixture
-def s3_bucket():
-    with mock_aws():
-        s3 = boto3.client('s3', region_name='eu-north-1')
-        s3.create_bucket(Bucket='health-ins-bucket', CreateBucketConfiguration={'LocationConstraint': 'eu-north-1'})
-        s3.put_object(Bucket='health-ins-bucket', Key='data/health-insurance.csv', Body='age,sex,bmi,children,smoker,region,expenses\n19,female,27.9,0,yes,southwest,16884.924\n')
-        yield s3
 
 # Ensure the output directory exists
 @pytest.fixture
@@ -24,23 +14,26 @@ def create_output_dir():
     os.makedirs('data', exist_ok=True)
 
 # AWS S3 connection and raw data download test case
-def test_aws_credentials_and_data_download(s3_bucket, create_output_dir):
+def test_aws_credentials_and_data_download(create_output_dir):
     # Ensure environment variables are set
     aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
     aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
+    region_name = os.getenv('AWS_DEFAULT_REGION', 'eu-north-1')
+    bucket_name = 'health-ins-bucket'
+    file_key = 'data/health-insurance.csv'
     
     assert aws_access_key_id is not None, "AWS Access Key ID is not set."
     assert aws_secret_access_key is not None, "AWS Secret Access Key is not set."
     
-    # Attempt to initialize boto3 client using the fixture
+    # Attempt to initialize boto3 client using actual AWS credentials
     try:
-        s3 = s3_bucket
+        s3 = boto3.client('s3', region_name=region_name, aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
     except (NoCredentialsError, PartialCredentialsError) as e:
         pytest.fail(f"AWS credentials are invalid: {e}")
     
     # Verify the object can be downloaded from S3
     try:
-        obj = s3.get_object(Bucket='health-ins-bucket', Key='data/health-insurance.csv')
+        obj = s3.get_object(Bucket=bucket_name, Key=file_key)
         raw_data = obj['Body'].read().decode('utf-8')
         assert len(raw_data) > 0, "Downloaded data is empty."
     except s3.exceptions.NoSuchKey:
@@ -48,9 +41,14 @@ def test_aws_credentials_and_data_download(s3_bucket, create_output_dir):
     except Exception as e:
         pytest.fail(f"An error occurred while downloading data: {e}")
 
-def test_preprocess_data_encoding_and_datatype(s3_bucket, create_output_dir):
+
+# Check for data encoding and datatype test case
+def test_preprocess_data_encoding_and_datatype(create_output_dir):
+    bucket_name = 'health-ins-bucket'
+    file_key = 'data/health-insurance.csv'
+    
     # Call preprocess_data to test its functionality
-    preprocess_data(bucket_name='health-ins-bucket', file_key='data/health-insurance.csv', output_dir='data')
+    preprocess_data(bucket_name=bucket_name, file_key=file_key, output_dir='data')
 
     # Load the processed data
     processed_data = pd.read_csv('data/encoded-data.csv')
@@ -71,14 +69,36 @@ def test_preprocess_data_encoding_and_datatype(s3_bucket, create_output_dir):
 
     print("Data encoding and datatype change tests passed.")
 
-# Preprocessed data upload back to S3 test case
-def test_upload_preprocessed_data_s3():
-    pass
+# Preprocessed data upload test case
+def test_data_upload(create_output_dir):
+    # Ensure environment variables are set
+    aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
+    aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
+    region_name = os.getenv('AWS_DEFAULT_REGION', 'eu-north-1')
+    bucket_name = 'health-ins-bucket'
+    file_key = 'data/encoded-data.csv'
 
-# Error handling for incorrect AWS creds or file path test case
-def test_aws_errors():
-    pass
+    assert aws_access_key_id is not None, "AWS Access Key ID is not set."
+    assert aws_secret_access_key is not None, "AWS Secret Access Key is not set."
 
-# Run the tests using pytest
+    # Attempt to initialize boto3 client using actual AWS credentials
+    s3 = boto3.client('s3', region_name=region_name, aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
+    
+    # Verify the object can be uploaded to S3
+    try:
+        with open(file_key, 'rb') as data_file:
+            s3.upload_fileobj(data_file, bucket_name, 'data/encoded-data.csv')
+        
+        # Verify the uploaded file by downloading it again
+        obj = s3.get_object(Bucket=bucket_name, Key='data/encoded-data.csv')
+        uploaded_data = obj['Body'].read().decode('utf-8')
+        local_data = pd.read_csv(file_key).to_csv(index=False)
+        assert uploaded_data == local_data, "Uploaded data does not match local data."
+    except s3.exceptions.NoSuchKey:
+        pytest.fail("The specified key does not exist in the bucket.")
+    except Exception as e:
+        pytest.fail(f"An error occurred while uploading or verifying data: {e}")
+
+
 if __name__ == '__main__':
     pytest.main()

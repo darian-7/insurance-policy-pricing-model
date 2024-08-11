@@ -44,12 +44,6 @@ def train_model(bucket_name, file_key, model_output_dir):
     )
     model.fit(X_train, y_train)
     
-    # Save the model
-    model_path = os.path.join(model_output_dir, 'model.joblib')
-    joblib.dump(model, model_path)
-    
-    print(f"Model trained and saved at {model_path}")
-    
     # Predictions and evaluation
     pred = model.predict(X_test)
     rmse = np.sqrt(mean_squared_error(y_test, pred))
