@@ -1,5 +1,0 @@
-outs:
-- md5: c07e98546a116642c653d4b1d881c48e
-  size: 27050
-  hash: md5
-  path: inference-data.csv

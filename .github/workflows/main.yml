@@ -26,7 +26,7 @@ jobs:
         run: echo "Running unit tests"
 
   sagemaker-deployment:
-    name: SageMaker CI/CD
+    name: Continuous Deployment
     needs: integration
     runs-on: ubuntu-latest
     

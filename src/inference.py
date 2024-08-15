@@ -15,14 +15,11 @@ aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
 aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
 
 # Initialize a session using Amazon S3
-s3 = boto3.client('s3', region_name='eu-north-1', 
-                  aws_access_key_id=aws_access_key_id, 
-                  aws_secret_access_key=aws_secret_access_key)
+s3 = boto3.client('s3', region_name='eu-north-1', aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
 
 bucket_name = 'health-ins-bucket'
+file_key = 'data/inference_subset.csv'
 model_key = 'models/optimal-model-rfr.pkl'
-file_key = 'data/inference-data.csv'
-output_dir = 'data'
 
 def load_model(bucket_name, model_key):
     # Download model from S3
@@ -35,7 +32,7 @@ def load_model(bucket_name, model_key):
 
 def predict_on_inference_data(model, preprocessed_data_path):
     # Load the preprocessed data
-    data = pd.read_csv(preprocessed_data_path)
+    data = pd.read_csv(inference_data_path)
 
     # Ensure 'expenses' column is not included in the features
     if 'expenses' in data.columns:
