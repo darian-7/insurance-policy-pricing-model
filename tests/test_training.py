@@ -70,16 +70,26 @@ def test_model_training(create_output_dir):
     file_key = 'data/encoded-data.csv'
 
     s3 = boto3.client('s3', region_name=region_name, aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
+
+    # Inference data download
+    try:
+        obj = s3.get_object(Bucket=bucket_name, Key=file_key)
+        raw_data = obj['Body'].read().decode('utf-8')
+        assert len(raw_data) > 0, "Downloaded encoded training data is empty."
+    except s3.exceptions.NoSuchKey:
+        pytest.fail("The specified key does not exist in the bucket.")
+    except Exception as e:
+        pytest.fail(f"An error occurred while downloading encoded training data: {e}")
     
     # Call train_model to test its functionality
     train_model(bucket_name=bucket_name, file_key=file_key, model_output_dir='models')
     
     # Load the processed data
-    encoded_data_path = os.path.join('data', 'encoded-data.csv')
-    preprocessed_data = pd.read_csv(encoded_data_path)
+    # encoded_data_path = os.path.join('data', 'encoded-data.csv')
+    # preprocessed_data = pd.read_csv(encoded_data_path)
     
-    X = preprocessed_data.drop(columns=['expenses'])
-    y = preprocessed_data['expenses']
+    X = raw_data.drop(columns=['expenses'])
+    y = raw_data['expenses']
     
     # Split the data into training and validation sets
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
