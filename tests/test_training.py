@@ -14,6 +14,15 @@ from botocore.exceptions import NoCredentialsError, PartialCredentialsError
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 from training import train_model
 
+aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
+aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
+region_name = os.getenv('AWS_DEFAULT_REGION', 'eu-north-1')
+
+# Initialize boto3 client
+s3 = boto3.client('s3', region_name=region_name,
+                  aws_access_key_id=aws_access_key_id,
+                  aws_secret_access_key=aws_secret_access_key)
+
 # Define thresholds for the model metrics test case
 RMSE_THRESHOLD = 5000  # Example threshold for RMSE
 R2_THRESHOLD = 0.8     # Example threshold for R^2

@@ -36,6 +36,12 @@ jobs:
         run: |
           echo "AWS credentials set"
 
+      - name: Print Environment Variables
+        run: |
+          echo "AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}"
+          echo "AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+          echo "AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}"
+
       - name: Run unit tests on preprocessing, training, and inference code
         run: |
           pytest tests/  # Run all tests in the tests folder

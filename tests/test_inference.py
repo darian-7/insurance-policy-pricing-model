@@ -14,6 +14,15 @@ from botocore.exceptions import NoCredentialsError, PartialCredentialsError
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 from inference import load_model, predict_on_inference_data, evaluate_model
 
+aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
+aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
+region_name = os.getenv('AWS_DEFAULT_REGION', 'eu-north-1')
+
+# Initialize boto3 client
+s3 = boto3.client('s3', region_name=region_name,
+                  aws_access_key_id=aws_access_key_id,
+                  aws_secret_access_key=aws_secret_access_key)
+
 # Ensure the output directory exists
 @pytest.fixture
 def create_output_dir():
