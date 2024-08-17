@@ -28,7 +28,15 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-      - name: Run unit tests
+      - name: Set up AWS credentials
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+        run: |
+          echo "AWS credentials set"
+
+      - name: Run unit tests on preprocessing, training, and inference code
         run: |
           pytest tests/  # Run all tests in the tests folder
 
