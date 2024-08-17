@@ -63,8 +63,13 @@ def test_aws_credentials_and_data_download(create_output_dir):
 
 # Model training, integration, and prediction test case
 def test_model_training(create_output_dir):
+    aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
+    aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
+    region_name = os.getenv('AWS_DEFAULT_REGION', 'eu-north-1')
     bucket_name = 'health-ins-bucket'
     file_key = 'data/encoded-data.csv'
+
+    s3 = boto3.client('s3', region_name=region_name, aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
     
     # Call train_model to test its functionality
     train_model(bucket_name=bucket_name, file_key=file_key, model_output_dir='models')
@@ -96,6 +101,15 @@ def test_model_training(create_output_dir):
 
 # Model performance metrics test case
 def test_model_performance(create_output_dir):
+
+    aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
+    aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
+    region_name = os.getenv('AWS_DEFAULT_REGION', 'eu-north-1')
+    bucket_name = 'health-ins-bucket'
+    file_key = 'data/health-insurance.csv'
+
+    s3 = boto3.client('s3', region_name=region_name, aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
+
     # Load the processed data
     encoded_data_path = os.path.join('data', 'encoded-data.csv')
     preprocessed_data = pd.read_csv(encoded_data_path)
