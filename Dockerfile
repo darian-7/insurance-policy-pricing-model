@@ -32,7 +32,5 @@ ENV SAGEMAKER_PROGRAM inference.py
 # Expose the port your application runs on
 EXPOSE 8000
 
-# Define the entry point
-ENTRYPOINT ["python3", "/opt/program/inference.py"]
-
-# Wrapper file (entry point) for preprocessing and training
+# Define the entry point - wrapper file
+ENTRYPOINT ["python3", "/opt/program/wrapper.py"]

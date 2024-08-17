@@ -14,6 +14,12 @@ def index():
 model_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../models/optimal-model-rfr.pkl'))
 model = joblib.load(model_path)
 
+# Define an endpoint for health check
+@app.route('/ping', methods=['GET'])
+def ping():
+  return '', 200
+
+# Define an endpoint to make predictions
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
