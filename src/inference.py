@@ -9,16 +9,18 @@ import matplotlib.pyplot as plt
 from preprocessing import preprocess_data
 from sklearn.metrics import mean_squared_error, r2_score, explained_variance_score
 from sklearn.model_selection import train_test_split, cross_val_score
-
-# Fetch AWS credentials from environment variables
-aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
-aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
+import pandas as pd
+import boto3
+import io
+import os
 
 # Initialize a session using Amazon S3
+aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
+aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
 s3 = boto3.client('s3', region_name='eu-north-1', aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
 
 bucket_name = 'health-ins-bucket'
-file_key = 'data/inference_subset.csv'
+file_key = 'data/encoded-inf-data.csv'
 model_key = 'models/optimal-model-rfr.pkl'
 
 def load_model(bucket_name, model_key):
@@ -30,9 +32,10 @@ def load_model(bucket_name, model_key):
     model = joblib.load(io.BytesIO(model_data))
     return model
 
-def predict_on_inference_data(model, preprocessed_data_path):
-    # Load the preprocessed data
-    data = pd.read_csv(inference_data_path)
+def predict_on_inference_data(model, bucket_name, file_key):
+    # Download the file from S3
+    obj = s3.get_object(Bucket=bucket_name, Key=file_key)
+    data = pd.read_csv(io.BytesIO(obj['Body'].read()))
 
     # Ensure 'expenses' column is not included in the features
     if 'expenses' in data.columns:
@@ -79,13 +82,13 @@ def evaluate_model(model, X, y):
     plt.grid(True)
     plt.show()
 
-# Example usage:
-model = load_model(bucket_name, model_key)
-preprocess_inference_data = preprocess_data(bucket_name=bucket_name, file_key=file_key, output_dir=output_dir)
-preprocessed_inference_data_path = os.path.join(output_dir, 'encoded-data.csv')
-predictions = predict_on_inference_data(model=model, preprocessed_data_path=preprocessed_inference_data_path)
+# # Example usage:
+# model = load_model(bucket_name, model_key)
+# predictions = predict_on_inference_data(model=model, bucket_name=bucket_name, file_key=file_key)
 
-data = pd.read_csv(preprocessed_inference_data_path)
-X = data.drop(columns=['expenses'])
-y = data['expenses']
+# # After making predictions, you can load the data again to evaluate the model
+# obj = s3.get_object(Bucket=bucket_name, Key=file_key)
+# data = pd.read_csv(io.BytesIO(obj['Body'].read()))
+# X = data.drop(columns=['expenses'])
+# y = data['expenses']
 # evaluate_model(model, X, y)

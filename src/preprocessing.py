@@ -47,8 +47,8 @@ def preprocess_data(bucket_name, file_key, output_dir):
     data['region'] = label_encoder.fit_transform(data['region'])
 
     # Save encoded data to CSV
-    encoded_data_path = os.path.join(output_dir, 'encoded-data.csv')
-    data.to_csv(encoded_data_path, index=False)
+    # encoded_data_path = os.path.join(output_dir, 'encoded-data.csv')
+    # data.to_csv(encoded_data_path, index=False)
 
     # Split the data into features and target
     X = data.drop(columns=['expenses'])
@@ -81,11 +81,11 @@ def preprocess_data(bucket_name, file_key, output_dir):
     print(data.head())
     print(data.dtypes)
 
-    # Upload encoded data to S3
-    with open(encoded_data_path, 'rb') as data_file:
-        s3.upload_fileobj(data_file, bucket_name, 'encoded_data/encoded-data.csv')
+    # # Upload encoded data to S3
+    # with open(encoded_data_path, 'rb') as data_file:
+    #     s3.upload_fileobj(data_file, bucket_name, 'encoded_data/encoded-data.csv')
 
-    print("Preprocessed dataset uploaded successfully to S3")
+    # print("Preprocessed dataset uploaded successfully to S3")
 
 # Example usage
 preprocess_data(bucket_name=bucket_name, file_key=file_key, output_dir='data')
