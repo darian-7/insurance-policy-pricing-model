@@ -2,3 +2,4 @@
 data/*.csv
 models/*.pkl
 models/*.tar.gz
+/data
