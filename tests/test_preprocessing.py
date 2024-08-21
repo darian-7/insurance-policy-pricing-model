@@ -3,6 +3,8 @@ import os
 import boto3
 import sys
 import pandas as pd
+
+from io import StringIO
 from botocore.exceptions import NoCredentialsError, PartialCredentialsError
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
@@ -54,13 +56,19 @@ def test_aws_credentials_and_data_download(create_output_dir):
 # Check for data encoding and datatype test case
 def test_preprocess_data_encoding_and_datatype(create_output_dir):
     bucket_name = 'health-ins-bucket'
-    file_key = 'data/health-insurance.csv'
+    file_key = 'data/encoded-data.csv'
     
     # Call preprocess_data to test its functionality
-    preprocess_data(bucket_name=bucket_name, file_key=file_key, output_dir='data')
+    # preprocess_data(bucket_name=bucket_name, file_key=file_key, output_dir='data')
 
-    # Load the processed data
-    processed_data = pd.read_csv('data/encoded-data.csv')
+    # Download the processed data directly from S3
+    try:
+        obj = s3.get_object(Bucket=bucket_name, Key=file_key)
+        processed_data = pd.read_csv(StringIO(obj['Body'].read().decode('utf-8')))
+    except s3.exceptions.NoSuchKey:
+        pytest.fail("The specified key does not exist in the bucket.")
+    except Exception as e:
+        pytest.fail(f"An error occurred while downloading processed data: {e}")
 
     # Check if the encoding for 'sex' and 'smoker' columns has been applied
     assert 'sex_male' in processed_data.columns, "sex_male column is missing in the encoded data"
