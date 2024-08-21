@@ -83,7 +83,7 @@ def preprocess_data(bucket_name, file_key, output_dir):
 
     # # Upload encoded data to S3
     # with open(encoded_data_path, 'rb') as data_file:
-    #     s3.upload_fileobj(data_file, bucket_name, 'encoded_data/encoded-data.csv')
+    #     s3.upload_fileobj(data_file, bucket_name, 'data/encoded-data.csv')
 
     # print("Preprocessed dataset uploaded successfully to S3")
 
