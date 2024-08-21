@@ -1,4 +1,4 @@
 # Ignore data files
 data/*.csv
-src/*.pkl
-/data
+models/*.pkl
+models/*.tar.gz
