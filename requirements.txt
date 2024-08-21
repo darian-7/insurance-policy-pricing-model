@@ -11,3 +11,4 @@ sagemaker
 flask
 pytest
 moto
+evidently
