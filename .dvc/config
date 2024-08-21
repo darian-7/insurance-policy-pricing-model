@@ -1,6 +1,0 @@
-[core]
-    remote = s3remote
-['remote "myremote"']
-    url = s3://health-insurance-bucket/dvc-storage
-['remote "s3remote"']
-    url = s3://health-ins-bucket/data
