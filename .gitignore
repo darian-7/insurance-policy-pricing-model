@@ -1,5 +1,6 @@
 # Ignore data files
-# data/*.csv
-models/*.pkl
-models/*.tar.gz
+data/*.csv
+models/optimal-model-rfr.pkl
+models/optimal-model-rfr.tar.gz
+models/model.joblib
 # /data

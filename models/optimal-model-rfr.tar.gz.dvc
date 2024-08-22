@@ -1,0 +1,5 @@
+outs:
+- md5: be024d955578afb2f75b81fd48560fe6
+  size: 3063631
+  hash: md5
+  path: optimal-model-rfr.tar.gz

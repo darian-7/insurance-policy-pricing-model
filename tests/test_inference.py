@@ -103,16 +103,6 @@ def test_model_predicton_on_inf_data(create_output_dir):
     
     # Load the model using the load_model function
     model = load_model(bucket_name=bucket_name, model_key=model_key)
-    
-    # # Call predict_on_inference_data with the loaded model
-    # predictions = evaluate_model(model=model, bucket_name=bucket_name, file_key=file_key)
-    
-    # # Add assertions 
-    # assert predictions is not None
-    
-    # # Load the processed data
-    # encoded_data_path = os.path.join('data', 'encoded-inf-data.csv')
-    # preprocessed_data = pd.read_csv(encoded_data_path)
 
     X = data.drop(columns=['expenses'])
     y = data['expenses']

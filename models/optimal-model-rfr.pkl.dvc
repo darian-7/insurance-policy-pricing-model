@@ -1,0 +1,5 @@
+outs:
+- md5: 041595cff75260628b25ddbe1354dd1f
+  size: 9798689
+  hash: md5
+  path: optimal-model-rfr.pkl
