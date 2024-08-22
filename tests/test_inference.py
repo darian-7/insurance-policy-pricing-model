@@ -5,6 +5,8 @@ import sys
 import pandas as pd
 import numpy as np
 import joblib
+import sklearn
+import io
 
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error, r2_score, explained_variance_score
@@ -12,7 +14,7 @@ from sklearn.model_selection import train_test_split, cross_val_score
 from botocore.exceptions import NoCredentialsError, PartialCredentialsError
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
-from inference import load_model, predict_on_inference_data, evaluate_model
+from inference import load_model, encode_raw_data, evaluate_model
 
 aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
 aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
@@ -50,7 +52,7 @@ def test_data_and_model_download(create_output_dir):
     aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
     region_name = os.getenv('AWS_DEFAULT_REGION', 'eu-north-1')
     bucket_name = 'health-ins-bucket'
-    file_key = 'data/health-insurance.csv'
+    file_key = 'data/encoded-inf-data.csv'
     model_key = 'models/optimal-model-rfr.pkl'
     
     s3 = boto3.client('s3', region_name=region_name, aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
@@ -78,42 +80,56 @@ def test_data_and_model_download(create_output_dir):
 
 # Model prediction on inference data test case
 def test_model_predicton_on_inf_data(create_output_dir):
+    # pass
+    aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
+    aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
+    region_name = os.getenv('AWS_DEFAULT_REGION', 'eu-north-1')
+    bucket_name = 'health-ins-bucket'
+    file_key = 'data/encoded-inf-data.csv'
+    model_key = 'models/optimal-model-rfr.pkl'
 
-    pass
+    s3 = boto3.client('s3', region_name=region_name, aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
 
-    # bucket_name = 'health-ins-bucket'
-    # file_key = 'data/encoded-inf-data.csv'
-    # model_key = 'models/optimal-model-rfr.pkl'
+    # Inference data download
+    try:
+        obj = s3.get_object(Bucket=bucket_name, Key=file_key)
+        data = obj['Body'].read().decode('utf-8')
+        assert len(data) > 0, "Downloaded encoded inference data is empty."
+        data = pd.read_csv(io.StringIO(data))  # Convert to DataFrame
+    except s3.exceptions.NoSuchKey:
+        pytest.fail("The specified key does not exist in the bucket.")
+    except Exception as e:
+        pytest.fail(f"An error occurred while downloading encoded inference data: {e}")
     
-    # # Load the model using the load_model function
-    # model = load_model(bucket_name=bucket_name, model_key=model_key)
+    # Load the model using the load_model function
+    model = load_model(bucket_name=bucket_name, model_key=model_key)
     
     # # Call predict_on_inference_data with the loaded model
-    # predictions = predict_on_inference_data(model=model, bucket_name=bucket_name, file_key=file_key)
+    # predictions = evaluate_model(model=model, bucket_name=bucket_name, file_key=file_key)
     
-    # # Add assertions or further checks here if needed
+    # # Add assertions 
     # assert predictions is not None
     
     # # Load the processed data
     # encoded_data_path = os.path.join('data', 'encoded-inf-data.csv')
     # preprocessed_data = pd.read_csv(encoded_data_path)
+
+    X = data.drop(columns=['expenses'])
+    y = data['expenses']
     
-    # X = preprocessed_data.drop(columns=['expenses'])
-    # y = preprocessed_data['expenses']
+    # Split the data into training and validation sets
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
     
-    # # Split the data into training and validation sets
-    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    # Initialize and train the model
+    model = load_model(bucket_name, model_key)
+    model.fit(X_train, y_train)
+    pred = model.predict(X_test)
     
-    # # Initialize and train the model
-    # model = load_model(bucket_name, model_key)
-    # model.fit(X_train, y_train)
-    # pred = model.predict(X_test)
+    # Check if the predictions are of the correct shape and type
+    assert len(pred) == len(y_test), "Number of predictions does not match number of samples."
+    assert isinstance(pred, np.ndarray), "Predictions are not of type np.ndarray."
     
-    # # Check if the predictions are of the correct shape and type
-    # assert len(pred) == len(y_test), "Number of predictions does not match number of samples."
-    # assert isinstance(pred, np.ndarray), "Predictions are not of type np.ndarray."
-    
-    # print("Model training and prediction tests passed.")
+    print("Model training and prediction tests passed.")
 
 if __name__ == '__main__':
     pytest.main()

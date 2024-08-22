@@ -13,9 +13,8 @@ if __name__ == "__main__":
     base_dir = "/Users/darian/Desktop/C5i docs/C5i Code/insurance-policy-pricing-model/src"
     preprocessing_script = os.path.join(base_dir, 'preprocessing.py')
     training_script = os.path.join(base_dir, 'sagemaker_training.py')
+    inference_script = os.path.join(base_dir, 'inference.py')
     
-    # Run preprocessing.py
     run_script(preprocessing_script)
-    
-    # Run sagemaker_training.py
     run_script(training_script)
+    run_script(inference_script)

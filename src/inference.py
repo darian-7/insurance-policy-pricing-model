@@ -20,6 +20,7 @@ aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
 s3 = boto3.client('s3', region_name='eu-north-1', aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
 
 bucket_name = 'health-ins-bucket'
+file_key_raw = 'data/raw-inf-data.csv'
 file_key = 'data/encoded-inf-data.csv'
 model_key = 'models/optimal-model-rfr.pkl'
 
@@ -32,21 +33,29 @@ def load_model(bucket_name, model_key):
     model = joblib.load(io.BytesIO(model_data))
     return model
 
-def predict_on_inference_data(model, bucket_name, file_key):
+def encode_raw_data(model, bucket_name, file_key_raw):
+    # Download the file from S3
+    obj = s3.get_object(Bucket=bucket_name, Key=file_key_raw)
+    data = pd.read_csv(io.BytesIO(obj['Body'].read()))
+
+    inf_dropped = data.drop(columns=['steps', 'insuranceclaim'])
+    inf = inf_dropped.rename(columns={'charges': 'expenses'})
+
+    # Ensure 'expenses' column is not included in the features
+    if 'expenses' in inf.columns:
+        data = inf.drop(columns=['expenses'])
+    
+    return inf
+
+def evaluate_model(model, bucket_name, file_key):
     # Download the file from S3
     obj = s3.get_object(Bucket=bucket_name, Key=file_key)
     data = pd.read_csv(io.BytesIO(obj['Body'].read()))
 
-    # Ensure 'expenses' column is not included in the features
-    if 'expenses' in data.columns:
-        data = data.drop(columns=['expenses'])
+    # Split the data into features and target
+    X = data.drop(columns=['expenses'])
+    y = data['expenses']
 
-    # Predict using the loaded model
-    predictions = model.predict(data)
-    
-    return predictions
-
-def evaluate_model(model, X, y):
     # Split the data into training and validation sets
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
@@ -82,9 +91,9 @@ def evaluate_model(model, X, y):
     plt.grid(True)
     plt.show()
 
-# # Example usage:
-# model = load_model(bucket_name, model_key)
-# predictions = predict_on_inference_data(model=model, bucket_name=bucket_name, file_key=file_key)
+# Example usage:
+model = load_model(bucket_name, model_key)
+evaluate_model(model=model, bucket_name=bucket_name, file_key=file_key)
 
 # # After making predictions, you can load the data again to evaluate the model
 # obj = s3.get_object(Bucket=bucket_name, Key=file_key)
