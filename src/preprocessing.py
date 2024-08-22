@@ -29,26 +29,21 @@ def preprocess_data(bucket_name, file_key, output_dir):
     print("Initial data:")
     print(data.head())
 
-    # One-Hot Encoding for binary categorical features
-    data = pd.get_dummies(data, columns=['sex', 'smoker'], drop_first=True)
+    # Label Encoding for binary categorical features
+    label_encoder = LabelEncoder()
+    data['sex'] = label_encoder.fit_transform(data['sex'])
+    data['smoker'] = label_encoder.fit_transform(data['smoker'])
 
     # Print the columns to check if encoding was successful
-    print("Data columns after get_dummies:")
+    print("Data columns after label encoding:")
     print(data.columns)
 
-    # Convert bool to int64 if the columns exist
-    if 'sex_male' in data.columns:
-        data['sex_male'] = data['sex_male'].astype('int64')
-    if 'smoker_yes' in data.columns:
-        data['smoker_yes'] = data['smoker_yes'].astype('int64')
+    # Convert the encoded columns to int64
+    data['sex'] = data['sex'].astype('int64')
+    data['smoker'] = data['smoker'].astype('int64')
 
-    # Label Encoding for ordinal relationship
-    label_encoder = LabelEncoder()
+    # Label Encoding for ordinal relationship in 'region'
     data['region'] = label_encoder.fit_transform(data['region'])
-
-    # Save encoded data to CSV
-    # encoded_data_path = os.path.join(output_dir, 'encoded-data.csv')
-    # data.to_csv(encoded_data_path, index=False)
 
     # Split the data into features and target
     X = data.drop(columns=['expenses'])
