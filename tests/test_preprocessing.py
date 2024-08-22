@@ -89,9 +89,6 @@ def test_preprocess_data_encoding_and_datatype(create_output_dir):
 # Preprocessed data upload test case
 def test_data_upload(create_output_dir):
     # Ensure environment variables are set
-    aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
-    aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
-    region_name = os.getenv('AWS_DEFAULT_REGION', 'eu-north-1')
     bucket_name = 'health-ins-bucket'
     file_key = 'data/encoded-data.csv'
 
@@ -104,10 +101,10 @@ def test_data_upload(create_output_dir):
     # Verify the object can be uploaded to S3
     try:
         with open(file_key, 'rb') as data_file:
-            s3.upload_fileobj(data_file, bucket_name, 'data/encoded-data.csv')
+            s3.upload_fileobj(data_file, bucket_name, file_key)
         
         # Verify the uploaded file by downloading it again
-        obj = s3.get_object(Bucket=bucket_name, Key='data/encoded-data.csv')
+        obj = s3.get_object(Bucket=bucket_name, Key=file_key)
         uploaded_data = obj['Body'].read().decode('utf-8')
         local_data = pd.read_csv(file_key).to_csv(index=False)
         assert uploaded_data == local_data, "Uploaded data does not match local data."
