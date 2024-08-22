@@ -1,5 +1,5 @@
 # Ignore data files
-data/*.csv
+# data/*.csv
 models/*.pkl
 models/*.tar.gz
-/data
+# /data
