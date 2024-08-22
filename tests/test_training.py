@@ -5,6 +5,7 @@ import sys
 import pandas as pd
 import numpy as np
 import joblib
+import io
 
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error, r2_score, explained_variance_score
@@ -79,6 +80,7 @@ def test_model_training(create_output_dir):
         obj = s3.get_object(Bucket=bucket_name, Key=file_key)
         data = obj['Body'].read().decode('utf-8')
         assert len(data) > 0, "Downloaded encoded training data is empty."
+        data = pd.read_csv(io.StringIO(data))  # Convert to DataFrame
     except s3.exceptions.NoSuchKey:
         pytest.fail("The specified key does not exist in the bucket.")
     except Exception as e:
@@ -86,10 +88,6 @@ def test_model_training(create_output_dir):
     
     # Call train_model to test its functionality
     train_model(bucket_name=bucket_name, file_key=file_key, model_output_dir='models')
-    
-    # Load the processed data
-    # encoded_data_path = os.path.join('data', 'encoded-data.csv')
-    # preprocessed_data = pd.read_csv(encoded_data_path)
     
     X = data.drop(columns=['expenses'])
     y = data['expenses']
@@ -112,9 +110,7 @@ def test_model_training(create_output_dir):
     
     print("Model training and prediction tests passed.")
 
-# Model performance metrics test case
 def test_model_performance(create_output_dir):
-
     aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
     aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
     region_name = os.getenv('AWS_DEFAULT_REGION', 'eu-north-1')
@@ -128,6 +124,7 @@ def test_model_performance(create_output_dir):
         obj = s3.get_object(Bucket=bucket_name, Key=file_key)
         data = obj['Body'].read().decode('utf-8')
         assert len(data) > 0, "Downloaded encoded training data is empty."
+        data = pd.read_csv(io.StringIO(data))  # Convert to DataFrame
     except s3.exceptions.NoSuchKey:
         pytest.fail("The specified key does not exist in the bucket.")
     except Exception as e:
@@ -135,10 +132,6 @@ def test_model_performance(create_output_dir):
     
     # Call train_model to test its functionality
     train_model(bucket_name=bucket_name, file_key=file_key, model_output_dir='models')
-    
-    # Load the processed data
-    # encoded_data_path = os.path.join('data', 'encoded-data.csv')
-    # preprocessed_data = pd.read_csv(encoded_data_path)
     
     X = data.drop(columns=['expenses'])
     y = data['expenses']

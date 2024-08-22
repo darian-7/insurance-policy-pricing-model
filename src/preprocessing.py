@@ -16,6 +16,7 @@ s3 = boto3.client('s3', region_name='eu-north-1', aws_access_key_id=aws_access_k
 
 bucket_name = 'health-ins-bucket'
 file_key = 'data/health-insurance.csv'
+# encoded_data_path = 'data'
 
 def preprocess_data(bucket_name, file_key, output_dir):
     # Download raw data from S3
