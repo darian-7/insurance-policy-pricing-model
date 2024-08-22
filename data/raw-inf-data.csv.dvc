@@ -1,0 +1,5 @@
+outs:
+- md5: 9a33534bd7d9f43c364c5e5083848c28
+  size: 47484
+  hash: md5
+  path: raw-inf-data.csv
