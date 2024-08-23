@@ -19,10 +19,9 @@ logger = logging.getLogger(__name__)
 
 def eval_metrics(actual, pred):
     rmse = np.sqrt(mean_squared_error(actual, pred))
-    mape = mean_absolute_percentage_error(actual, pred) * 100
     evs = explained_variance_score(actual, pred)
     r2 = r2_score(actual, pred)
-    return rmse, mape, r2, evs
+    return rmse, r2, evs
 
 if __name__ == "__main__":
     warnings.filterwarnings("ignore")
@@ -38,7 +37,6 @@ if __name__ == "__main__":
 
     # Handle command line arguments or set default values
     n_estimators = int(sys.argv[1]) if len(sys.argv) > 1 else 600
-    max_depth = int(sys.argv[2]) if len(sys.argv) > 2 else None
     min_samples_leaf = int(sys.argv[3]) if len(sys.argv) > 3 else 1
     min_samples_split = int(sys.argv[4]) if len(sys.argv) > 4 else 2
 
@@ -48,7 +46,6 @@ if __name__ == "__main__":
     with mlflow.start_run():
         pipeline = Pipeline(steps=[
             ('regressor', RandomForestRegressor(
-                max_depth=max_depth, 
                 min_samples_leaf=min_samples_leaf, 
                 min_samples_split=min_samples_split, 
                 n_estimators=n_estimators))
@@ -58,21 +55,18 @@ if __name__ == "__main__":
 
         predicted_qualities = pipeline.predict(X_test)
 
-        (rmse, mape, r2, evs) = eval_metrics(y_test, predicted_qualities)
+        (rmse, r2, evs) = eval_metrics(y_test, predicted_qualities)
 
-        print("RFR model (n_estimators=%d, max_depth=%s, min_samples_leaf=%d, min_samples_split=%d):" % (n_estimators, max_depth, min_samples_leaf, min_samples_split))
+        print("RFR model (n_estimators=%d, min_samples_leaf=%d, min_samples_split=%d):" % (n_estimators, min_samples_leaf, min_samples_split))
         print("  RMSE: %s" % rmse)
-        print("  MAPE: %s" % mape)
         print("  R2: %s" % r2)
         print("  Explained Variance Score: %s" % evs)
 
         mlflow.log_param("n_estimators", n_estimators)
-        mlflow.log_param("max_depth", max_depth)
         mlflow.log_param("min_samples_leaf", min_samples_leaf)
         mlflow.log_param("min_samples_split", min_samples_split)
         mlflow.log_metric("rmse", rmse)
         mlflow.log_metric("r2", r2)
-        mlflow.log_metric("mape", mape)
         mlflow.log_metric("evs", evs)
 
         tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme
