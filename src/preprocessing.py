@@ -16,7 +16,6 @@ s3 = boto3.client('s3', region_name='eu-north-1', aws_access_key_id=aws_access_k
 
 bucket_name = 'health-ins-bucket'
 file_key = 'data/health-insurance.csv'
-# encoded_data_path = 'data'
 
 def preprocess_data(bucket_name, file_key, output_dir):
     # Download raw data from S3
@@ -46,25 +45,12 @@ def preprocess_data(bucket_name, file_key, output_dir):
     # Label Encoding for ordinal relationship in 'region'
     data['region'] = label_encoder.fit_transform(data['region'])
 
-    # Split the data into features and target
-    X = data.drop(columns=['expenses'])
-    y = data['expenses']
-
-    # Split the data into training and validation sets
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-    # Concatenate the features and target variable for train and validation sets
-    train = pd.concat([X_train, y_train], axis=1)
-    validation = pd.concat([X_test, y_test], axis=1)
-
     # Ensure the data directory exists
     os.makedirs(output_dir, exist_ok=True)
 
-    # Save the train and validation data to CSV files
-    train_data_path = os.path.join(output_dir, 'train.csv')
-    validation_data_path = os.path.join(output_dir, 'validation.csv')
-    train.to_csv(train_data_path, index=False)
-    validation.to_csv(validation_data_path, index=False)
+    # Save the encoded data to CSV
+    encoded_data_path = os.path.join(output_dir, 'encoded-data.csv')
+    data.to_csv(encoded_data_path, index=False)
 
     # Visualize correlation matrix
     correlation_matrix = data.corr()
@@ -77,11 +63,11 @@ def preprocess_data(bucket_name, file_key, output_dir):
     print(data.head())
     print(data.dtypes)
 
-    # # Upload encoded data to S3
-    # with open(encoded_data_path, 'rb') as data_file:
-    #     s3.upload_fileobj(data_file, bucket_name, 'data/encoded-data.csv')
+    # Upload encoded data to S3
+    with open(encoded_data_path, 'rb') as data_file:
+        s3.upload_fileobj(data_file, bucket_name, 'data/encoded-data.csv')
 
-    # print("Preprocessed dataset uploaded successfully to S3")
+    print(f"Preprocessed dataset uploaded successfully to S3 at s3://{bucket_name}/data/encoded-data.csv")
 
 # Example usage
 preprocess_data(bucket_name=bucket_name, file_key=file_key, output_dir='data')
