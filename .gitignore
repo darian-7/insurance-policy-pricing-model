@@ -3,4 +3,4 @@ data/*.csv
 models/optimal-model-rfr.pkl
 models/optimal-model-rfr.tar.gz
 models/model.joblib
-*.jpg
+# *.jpg
