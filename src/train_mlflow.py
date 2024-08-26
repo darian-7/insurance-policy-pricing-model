@@ -41,7 +41,7 @@ if __name__ == "__main__":
     min_samples_split = int(sys.argv[4]) if len(sys.argv) > 4 else 2
 
     # Set the tracking URI for MLflow
-    mlflow.set_tracking_uri("file:///tmp/mlruns")
+    mlflow.set_tracking_uri("s3://health-ins-bucket/mlflow")
 
     with mlflow.start_run():
         pipeline = Pipeline(steps=[
