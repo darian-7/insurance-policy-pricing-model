@@ -4,9 +4,9 @@ This repository contains all the source code of my end-to-end data science proje
 
 The client is a health insurance company and my task was to use the client's raw data containing policyholder information to create a predictive model determining the optimal 'premium' for each policyholder. The data contains a combination of numerical and categorical features, each with their own respective relationship to the target (dependent) variable: medical expense. This model is now used by the client to predict accurate expenses of future policyholders to help underwriters quote the most profitable and accurate premium based on the customers' risk profiles.
 
-![ ](./flowchart.jpg)
+![Project workflow](./flowchart.jpg)
 
-## My data pipeline is visualized above and described below
+### My data pipeline is visualized above and described below
 
 1. Conduct EDA to understand the distribution of independent features and their correlations, carry out encoding to convert categorical features to numerical.
 2. Given that it is a regression problem, compare regression metrics and experiment with multiple models to filter the best performing one. 
