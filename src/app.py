@@ -27,7 +27,7 @@ def predict():
         data = request.get_json()
         
         # Extract features from JSON
-        features = np.array([data['age'], data['bmi'], data['children'], data['region'], data['sex_male'], data['smoker_yes']])
+        features = np.array([data['age'], data['bmi'], data['children'], data['region'], data['sex'], data['smoker']])
         features = features.reshape(1, -1)  # Reshape for a single prediction
         
         # Make a prediction

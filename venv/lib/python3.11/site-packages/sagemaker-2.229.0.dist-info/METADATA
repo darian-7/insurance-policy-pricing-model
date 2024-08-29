@@ -1,0 +1,97 @@
+Metadata-Version: 2.1
+Name: sagemaker
+Version: 2.229.0
+Summary: UNKNOWN
+Home-page: UNKNOWN
+License: UNKNOWN
+Platform: UNKNOWN
+Requires-Dist: attrs<24,>=23.1.0
+Requires-Dist: boto3<2.0,>=1.34.142
+Requires-Dist: cloudpickle==2.2.1
+Requires-Dist: docker
+Requires-Dist: google-pasta
+Requires-Dist: importlib-metadata<7.0,>=1.4.0
+Requires-Dist: jsonschema
+Requires-Dist: numpy<2.0,>=1.9.0
+Requires-Dist: packaging>=20.0
+Requires-Dist: pandas
+Requires-Dist: pathos
+Requires-Dist: platformdirs
+Requires-Dist: protobuf<5.0,>=3.12
+Requires-Dist: psutil
+Requires-Dist: PyYAML~=6.0
+Requires-Dist: requests
+Requires-Dist: schema
+Requires-Dist: smdebug-rulesconfig==1.0.1
+Requires-Dist: tblib<4,>=1.7.0
+Requires-Dist: tqdm
+Requires-Dist: urllib3<3.0.0,>=1.26.8
+Provides-Extra: all
+Requires-Dist: pyspark==3.3.1; extra == "all"
+Requires-Dist: sagemaker-feature-store-pyspark-3.3; extra == "all"
+Requires-Dist: accelerate<=0.27.0,>=0.24.1; extra == "all"
+Requires-Dist: sagemaker-schema-inference-artifacts>=0.0.5; extra == "all"
+Requires-Dist: urllib3<3.0.0,>=1.26.8; extra == "all"
+Requires-Dist: docker<8.0.0,>=5.0.2; extra == "all"
+Requires-Dist: PyYAML<7,>=5.4.1; extra == "all"
+Requires-Dist: scipy==1.10.1; extra == "all"
+Provides-Extra: feature-processor
+Requires-Dist: pyspark==3.3.1; extra == "feature-processor"
+Requires-Dist: sagemaker-feature-store-pyspark-3.3; extra == "feature-processor"
+Provides-Extra: huggingface
+Requires-Dist: accelerate<=0.27.0,>=0.24.1; extra == "huggingface"
+Requires-Dist: sagemaker-schema-inference-artifacts>=0.0.5; extra == "huggingface"
+Provides-Extra: local
+Requires-Dist: urllib3<3.0.0,>=1.26.8; extra == "local"
+Requires-Dist: docker<8.0.0,>=5.0.2; extra == "local"
+Requires-Dist: PyYAML<7,>=5.4.1; extra == "local"
+Provides-Extra: scipy
+Requires-Dist: scipy==1.10.1; extra == "scipy"
+Provides-Extra: test
+Requires-Dist: tox==3.24.5; extra == "test"
+Requires-Dist: build[virtualenv]==1.2.1; extra == "test"
+Requires-Dist: flake8==4.0.1; extra == "test"
+Requires-Dist: pytest==6.2.5; extra == "test"
+Requires-Dist: pytest-cov==3.0.0; extra == "test"
+Requires-Dist: pytest-rerunfailures==10.2; extra == "test"
+Requires-Dist: pytest-timeout==2.1.0; extra == "test"
+Requires-Dist: pytest-xdist==2.4.0; extra == "test"
+Requires-Dist: coverage<6.2,>=5.2; extra == "test"
+Requires-Dist: mock==4.0.3; extra == "test"
+Requires-Dist: contextlib2==21.6.0; extra == "test"
+Requires-Dist: awslogs==0.14.0; extra == "test"
+Requires-Dist: black==24.3.0; extra == "test"
+Requires-Dist: stopit==1.1.2; extra == "test"
+Requires-Dist: apache-airflow==2.9.3; extra == "test"
+Requires-Dist: apache-airflow-providers-amazon==7.2.1; extra == "test"
+Requires-Dist: attrs<24,>=23.1.0; extra == "test"
+Requires-Dist: fabric==2.6.0; extra == "test"
+Requires-Dist: requests==2.32.2; extra == "test"
+Requires-Dist: sagemaker-experiments==0.1.35; extra == "test"
+Requires-Dist: Jinja2==3.1.4; extra == "test"
+Requires-Dist: pyvis==0.2.1; extra == "test"
+Requires-Dist: pandas<1.5,>=1.3.5; extra == "test"
+Requires-Dist: scikit-learn==1.3.0; extra == "test"
+Requires-Dist: cloudpickle==2.2.1; extra == "test"
+Requires-Dist: PyYAML==6.0; extra == "test"
+Requires-Dist: xgboost<=1.7.6,>=1.6.2; extra == "test"
+Requires-Dist: pillow<=11,>=10.0.1; extra == "test"
+Requires-Dist: tritonclient[http]<2.37.0; extra == "test"
+Requires-Dist: onnx>=1.15.0; extra == "test"
+Requires-Dist: nbformat<6,>=5.9; extra == "test"
+Requires-Dist: accelerate<=0.27.0,>=0.24.1; extra == "test"
+Requires-Dist: schema==0.7.5; extra == "test"
+Requires-Dist: tensorflow<=2.16,>=2.1; extra == "test"
+Requires-Dist: mlflow<2.13,>=2.12.2; extra == "test"
+Requires-Dist: huggingface-hub>=0.23.4; extra == "test"
+Requires-Dist: pyspark==3.3.1; extra == "test"
+Requires-Dist: sagemaker-feature-store-pyspark-3.3; extra == "test"
+Requires-Dist: sagemaker-schema-inference-artifacts>=0.0.5; extra == "test"
+Requires-Dist: urllib3<3.0.0,>=1.26.8; extra == "test"
+Requires-Dist: docker<8.0.0,>=5.0.2; extra == "test"
+Requires-Dist: PyYAML<7,>=5.4.1; extra == "test"
+Requires-Dist: scipy==1.10.1; extra == "test"
+
+UNKNOWN
+
+
