@@ -52,6 +52,16 @@ def preprocess_data(bucket_name, file_key, output_dir):
     encoded_data_path = os.path.join(output_dir, 'encoded-data.csv')
     data.to_csv(encoded_data_path, index=False)
 
+    # Plot histograms
+    distribution_plots = ['bmi', 'expenses']
+    for feature in distribution_plots:
+        plt.figure(figsize=(8, 6))
+        sns.histplot(data[feature], kde=True, bins=30)
+        plt.title(f'Distribution of {feature}')
+        plt.xlabel(feature)
+        plt.ylabel('Frequency')
+        plt.show()
+
     # Visualize correlation matrix
     correlation_matrix = data.corr()
     plt.figure(figsize=(12, 8))
