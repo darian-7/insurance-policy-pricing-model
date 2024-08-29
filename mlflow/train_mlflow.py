@@ -86,7 +86,7 @@ if __name__ == "__main__":
 
         # Model registry does not work with file store
         if tracking_url_type_store != "file":
-            # Register the model
+
             mlflow.sklearn.log_model(pipeline, "model", registered_model_name="RFR-health-ins")
         else:
             mlflow.sklearn.log_model(pipeline, "model")
