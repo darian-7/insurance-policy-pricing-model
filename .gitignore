@@ -1,6 +1,26 @@
-# Ignore data files
-data/*.csv
-models/optimal-model-rfr.pkl
-models/optimal-model-rfr.tar.gz
-models/model.joblib
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Virtual environments
 venv/
+.venv/
+env/
+
+# OS / editor cruft
+.DS_Store
+**/tempCodeRunnerFile.py
+
+# MLflow local tracking store (regenerated on training)
+mlflow/mlruns/
+mlflow/mlflow.db
+**/mlruns/
+
+# Data and model artifacts (versioned via DVC, not git)
+data/*.csv
+models/*.pkl
+models/*.joblib
+models/*.tar.gz
